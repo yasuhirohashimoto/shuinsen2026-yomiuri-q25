@@ -237,9 +237,9 @@
 
         const origin = new THREE.Vector3(0, 0, 0);
         const axesDefs = [
-            { dir: new THREE.Vector3(1, 0, 0), color: 0xff0000, label: "PC1 (X)" }, 
-            { dir: new THREE.Vector3(0, 1, 0), color: 0x00aa00, label: "PC2 (Y)" }, 
-            { dir: new THREE.Vector3(0, 0, 1), color: 0x0000ff, label: "PC3 (Z)" }  
+            { dir: new THREE.Vector3(1, 0, 0), color: 0xff0000, label: "X" }, 
+            { dir: new THREE.Vector3(0, 1, 0), color: 0x00aa00, label: "Y" }, 
+            { dir: new THREE.Vector3(0, 0, 1), color: 0x0000ff, label: "Z" }  
         ];
         axesDefs.forEach(def => {
             scene.add(new THREE.ArrowHelper(def.dir, origin, 55, def.color, 2, 1));
