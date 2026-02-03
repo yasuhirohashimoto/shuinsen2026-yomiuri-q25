@@ -169,14 +169,14 @@
             <h3>使用データと集計方法</h3>
             <ul>
                 <li><strong>対象設問（Q25）:</strong><br>
-                「次にあげる政党の党首に対する、あなたの気持ちをお答えください。（最も好感を持つ場合は10、最も反感を持つ場合は0、好感も反感も持たない場合を5）」</li>
+                「次にあげる政党の党首に対する、あなたの気持ちをお答えください。（最も好感を持つ場合は10、最も反感を持つ場合は0、好感も反感も持たない場合は5）」</li>
                 <li><strong>データ処理:</strong><br>
-                元のスケール「0（反感）〜10（好感）」を、「&#8722;1 〜 +1」の範囲に再スケーリングして使用しました。<br>
-                ※「回答なし」については、どちらでもない「0（ニュートラル）」として処理しています。</li>
+                元のスケール「0（反感）〜10（好感）」を、「&#8722;1 〜 +1」の範囲に再スケーリングして使用。「回答なし」は、どちらでもない「0（ニュートラル）」として処理しています。<br>
+                ※ 完全に同一な値を持つ候補者の位置をずらして見やすくするために、元ベクトルの各成分に平均0、標準偏差0.05のガウシアンノイズを加えています。</li>
             </ul>
 
             <h3>分析手法：主成分分析 (PCA)</h3>
-            <p>多次元の回答データを、情報の損失をなるべく抑えつつ3次元空間（X, Y, Z軸）に圧縮しました。</p>
+            <p>10次元（党首の数）の回答データを、情報の損失をなるべく抑えつつ3次元空間に圧縮しました。</p>
             <ul>
                 <li><strong>第1主成分 (PC1):</strong> 寄与率 <strong>44.8%</strong></li>
                 <li><strong>第2主成分 (PC2):</strong> 寄与率 <strong>21.2%</strong></li>
@@ -239,9 +239,9 @@
 
         const origin = new THREE.Vector3(0, 0, 0);
         const axesDefs = [
-            { dir: new THREE.Vector3(1, 0, 0), color: 0xff0000, label: "PC1 (X)" }, 
-            { dir: new THREE.Vector3(0, 1, 0), color: 0x00aa00, label: "PC2 (Y)" }, 
-            { dir: new THREE.Vector3(0, 0, 1), color: 0x0000ff, label: "PC3 (Z)" }  
+            { dir: new THREE.Vector3(1, 0, 0), color: 0xff0000, label: "PC1" }, 
+            { dir: new THREE.Vector3(0, 1, 0), color: 0x00aa00, label: "PC2" }, 
+            { dir: new THREE.Vector3(0, 0, 1), color: 0x0000ff, label: "PC3" }  
         ];
         axesDefs.forEach(def => {
             scene.add(new THREE.ArrowHelper(def.dir, origin, 55, def.color, 2, 1));
