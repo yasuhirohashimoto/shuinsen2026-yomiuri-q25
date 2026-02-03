@@ -176,7 +176,7 @@
             </ul>
 
             <h3>分析手法：UMAP (Uniform Manifold Approximation and Projection)</h3>
-            <p>10次元（党首の数）の回答データを、似ているものは近く、違うものは遠くなるように、3次元の空間へ配置し直しました。似た回答のグループが見えやすくなる一方で、X・Y・Z軸の意味はPCAほど明確ではありません。</p>
+            <p>10次元（党首の数）の回答データを、似ているものは近く、違うものは遠くなるように、3次元の空間へ配置し直しました。似た回答の候補者のグループが見やすくなる一方で、X・Y・Z軸の意味はPCAほど明確ではありません。</p>
             <ul>
                 <li>用いたライブラリ：<code>cuml.manifold.UMAP</code></li>
                 <li>用いたパラメータ：<code>n_components=3, n_neighbors=30, min_dist=0.8</code></li>
