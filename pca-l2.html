@@ -63,6 +63,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            -webkit-tap-highlight-color: transparent;/* スマホの「四角い色」を消す魔法 */
         }
         #about-btn:hover { background: #eee; }
 
@@ -129,34 +130,12 @@
         }
         #close-modal {
             position: absolute;
-            top: 15px; right: 20px;
-            font-size: 32px;
-            font-weight: normal;
+            top: 10px; right: 15px;
+            font-size: 24px;
             cursor: pointer;
-            color: #aaa;
-            z-index: 10;
-            line-height: 1;
-            
-            /* 背景・枠線・選択を無効化 */
-            background: transparent;
-            border: none;
-            outline: none;
-            user-select: none;
-            -webkit-user-select: none;
-            
-            /* スマホの「四角い色」を消す魔法 */
-            -webkit-tap-highlight-color: transparent;
-            
-            /* タップしやすいように当たり判定を広げる */
-            padding: 10px;
-            
-            transition: color 0.2s, transform 0.2s;
+            color: #999;
         }
-
-        #close-modal:hover { 
-            color: #333;
-            transform: scale(1.1);
-        }
+        #close-modal:hover { color: #333; }
 
         /* 検索ボックス */
         #search-container {
