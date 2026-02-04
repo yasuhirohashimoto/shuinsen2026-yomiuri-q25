@@ -114,7 +114,6 @@
             font-size: 18px;
             margin-top: 35px;
             margin-bottom: 15px;
-            color: #555;
             font-weight: bold;
             letter-spacing: 0.08em;
         }
@@ -131,14 +130,33 @@
         #close-modal {
             position: absolute;
             top: 15px; right: 20px;
-            font-size: 28px;
+            font-size: 32px;
+            font-weight: normal;
             cursor: pointer;
-            color: #ccc;
+            color: #aaa;
             z-index: 10;
-            transition: color 0.2s;
             line-height: 1;
+            
+            /* 背景・枠線・選択を無効化 */
+            background: transparent;
+            border: none;
+            outline: none;
+            user-select: none;
+            -webkit-user-select: none;
+            
+            /* スマホの「四角い色」を消す魔法 */
+            -webkit-tap-highlight-color: transparent;
+            
+            /* タップしやすいように当たり判定を広げる */
+            padding: 10px;
+            
+            transition: color 0.2s, transform 0.2s;
         }
-        #close-modal:hover { color: #555; }
+
+        #close-modal:hover { 
+            color: #333;
+            transform: scale(1.1);
+        }
 
         /* 検索ボックス */
         #search-container {
