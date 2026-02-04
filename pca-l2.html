@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>衆院選2026 候補者・政党党首好感度マップ（PCA-L2正則化版）</title>
     <style>
+        * {
+            box-sizing: border-box;
+        }
+        
         body { margin: 0; overflow: hidden; font-family: "Noto Sans JP", "Meiryo", sans-serif; background-color: #f0f0f0; }
         
         /* レジェンド設定 */
@@ -82,6 +86,12 @@
             box-shadow: 0 5px 15px rgba(0,0,0,0.3);
             position: relative;
             line-height: 1.6;
+            word-wrap: break-word; 
+            overflow-wrap: break-word;
+        }
+        #about-content a {
+            word-break: break-all;
+            color: #1f77b4;
         }
         #about-content h2 { margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 10px; }
         #about-content h3 { font-size: 16px; margin-top: 20px; color: #333; }
@@ -177,8 +187,9 @@
             
             /* 解説モーダルを画面幅に合わせる */
             #about-content {
-                width: 85%;
-                max-height: 80vh;
+                padding: 20px 15px; /* 横の余白を少し減らす */
+                max-height: 90vh;   /* 画面の高さをより広く使う */
+                width: 95%;         /* 幅を画面幅の95%に設定 */
             }
         }
     </style>
