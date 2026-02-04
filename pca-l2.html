@@ -79,6 +79,7 @@
             padding: 10px;
         }
         #about-content {
+            color: #333;
             background: white;
             padding: 30px;
             border-radius: 8px;
@@ -88,7 +89,11 @@
             overflow-y: auto; /* スクロール許可 */
             box-shadow: 0 5px 15px rgba(0,0,0,0.3);
             position: relative;
-            line-height: 1.6;
+            line-height: 1.8;
+            font-feature-settings: "palt";
+            letter-spacing: 0.05em;
+            text-align: justify;
+            text-justify: inter-ideograph;
             word-wrap: break-word; 
             overflow-wrap: break-word;
         }
@@ -96,16 +101,44 @@
             word-break: break-all;
             color: #1f77b4;
         }
-        #about-content h2 { margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 10px; }
-        #about-content h3 { font-size: 16px; margin-top: 20px; color: #333; }
+        #about-content h2 {
+            margin-top: 0;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+            font-size: 24px;
+            letter-spacing: 0.1em;
+            text-align: center;
+        }
+        #about-content h3 {
+            font-size: 16px;
+            margin-top: 35px;
+            margin-bottom: 15px;
+            color: #1f77b4;
+            font-weight: bold;
+            letter-spacing: 0.08em;
+        }
+        #about-content ul {
+            padding-left: 1.5em;
+            margin-bottom: 20px;
+        }
+        #about-content li {
+            margin-bottom: 10px;
+        }
+        #about-content p {
+            margin-bottom: 1.5em;
+        }
         #close-modal {
             position: absolute;
-            top: 10px; right: 15px;
-            font-size: 24px;
+            top: 15px; right: 20px;
+            font-size: 28px;
             cursor: pointer;
-            color: #999;
+            color: #ccc;
+            z-index: 10;
+            transition: color 0.2s;
+            line-height: 1;
         }
-        #close-modal:hover { color: #333; }
+        #close-modal:hover { color: #555; }
 
         /* 検索ボックス */
         #search-container {
@@ -190,11 +223,17 @@
             
             /* 解説モーダルを画面幅に合わせる */
             #about-content {
-                padding: 20px 15px; /* 横の余白を少し減らす */
-                max-height: 90vh;   /* 画面の高さをより広く使う */
-                width: 95%;         /* 幅を画面幅の95%に設定 */
+                padding: 25px 20px;
+                max-height: 90vh;
+                width: 95%;
+                font-size: 14px;
+                line-height: 1.7;
             }
-            #about-content h2 { font-size: 20px; }
+            #about-content h2 {
+                font-size: 20px;
+                margin-bottom: 20px;
+                padding-bottom: 10px;
+            }
         }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
