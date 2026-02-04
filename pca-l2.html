@@ -111,10 +111,10 @@
             text-align: center;
         }
         #about-content h3 {
-            font-size: 16px;
+            font-size: 18px;
             margin-top: 35px;
             margin-bottom: 15px;
-            color: #1f77b4;
+            color: #555;
             font-weight: bold;
             letter-spacing: 0.08em;
         }
@@ -431,27 +431,40 @@
         // 判定対象のスプライトリスト
         const targetSprites = candidateObjects.map(obj => obj.sprite);
 
-        // マウス移動イベント
+        // UI要素のセレクタ（これらに触れているときは3D判定しない）
+        const uiSelectors = '#about-modal, #legend, #search-container, #about-btn, #search-results';
+
+        // PC向け：マウス移動
         window.addEventListener('mousemove', (event) => {
-            // マウス位置を正規化 (-1 to +1)
+            if (event.target.closest(uiSelectors)) {
+                mouse.x = -999;
+                mouse.y = -999;
+                tooltip.style.display = 'none';
+                document.body.style.cursor = 'default';
+                return;
+            }
+            // 通常の処理
             mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
             mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-
-            // ツールチップの位置追従
-            tooltip.style.left = event.clientX + 15 + 'px';
-            tooltip.style.top = event.clientY + 15 + 'px';
+            
+            updateTooltipPos(event.clientX, event.clientY);
         });
 
-        // スマホでタッチした位置も判定（Raycaster用）
+        // スマホ向け：タッチ操作
         window.addEventListener('touchstart', (event) => {
             if (event.touches.length > 0) {
                 const touch = event.touches[0];
-                
-                // タッチ座標を WebGL用に正規化 (-1 〜 +1)
+
+                if (event.target.closest(uiSelectors)) {
+                    mouse.x = -999;
+                    mouse.y = -999;
+                    tooltip.style.display = 'none';
+                    return;
+                }
+
                 mouse.x = (touch.clientX / window.innerWidth) * 2 - 1;
                 mouse.y = -(touch.clientY / window.innerHeight) * 2 + 1;
                 
-                // ツールチップの位置更新
                 updateTooltipPos(touch.clientX, touch.clientY);
             }
         }, { passive: false });
