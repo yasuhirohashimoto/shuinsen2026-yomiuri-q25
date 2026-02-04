@@ -63,6 +63,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            -webkit-tap-highlight-color: transparent;/* スマホの「四角い色」を消す魔法 */
         }
         #about-btn:hover { background: #eee; }
 
@@ -79,16 +80,21 @@
             padding: 10px;
         }
         #about-content {
+            color: #333;
             background: white;
             padding: 30px;
             border-radius: 8px;
             max-width: 600px;
             width: 100%;
-            max-height: 85vh;
-            overflow-y: auto;
+            max-height: 85vh; /* 高さ制限 */
+            overflow-y: auto; /* スクロール許可 */
             box-shadow: 0 5px 15px rgba(0,0,0,0.3);
             position: relative;
-            line-height: 1.6;
+            line-height: 1.8;
+            font-feature-settings: "palt";
+            letter-spacing: 0.05em;
+            text-align: justify;
+            text-justify: inter-ideograph;
             word-wrap: break-word; 
             overflow-wrap: break-word;
         }
@@ -96,8 +102,32 @@
             word-break: break-all;
             color: #1f77b4;
         }
-        #about-content h2 { margin-top: 0; border-bottom: 1px solid #eee; padding-bottom: 10px; }
-        #about-content h3 { font-size: 16px; margin-top: 20px; color: #333; }
+        #about-content h2 {
+            margin-top: 0;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+            font-size: 24px;
+            letter-spacing: 0.1em;
+            text-align: center;
+        }
+        #about-content h3 {
+            font-size: 18px;
+            margin-top: 35px;
+            margin-bottom: 15px;
+            font-weight: bold;
+            letter-spacing: 0.08em;
+        }
+        #about-content ul {
+            padding-left: 1.5em;
+            margin-bottom: 20px;
+        }
+        #about-content li {
+            margin-bottom: 10px;
+        }
+        #about-content p {
+            margin-bottom: 1.5em;
+        }
         #close-modal {
             position: absolute;
             top: 10px; right: 15px;
@@ -190,11 +220,17 @@
             
             /* 解説モーダルを画面幅に合わせる */
             #about-content {
-                padding: 20px 15px;
+                padding: 25px 20px;
                 max-height: 90vh;
                 width: 95%;
+                font-size: 14px;
+                line-height: 1.7;
             }
-            #about-content h2 { font-size: 20px; }
+            #about-content h2 {
+                font-size: 20px;
+                margin-bottom: 20px;
+                padding-bottom: 10px;
+            }
         }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
