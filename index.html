@@ -5,233 +5,255 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>衆院選2026 候補者・政党党首好感度マップ（PCA版）</title>
     <style>
-        * {
-            box-sizing: border-box;
-        }
-
-        body { margin: 0; overflow: hidden; font-family: "Noto Sans JP", "Meiryo", sans-serif; background-color: #f0f0f0; }
+    /* --- 1. デザイン変数の定義 --- */
+    :root {
+        --bg-glass: rgba(255, 255, 255, 0.9);
+        --bg-glass-dark: rgba(0, 0, 0, 0.8);
+        --primary-color: #1f77b4;
+        --border-color: rgba(0, 0, 0, 0.1);
+        --text-main: #333;
+        --text-sub: #666;
+        --accent-blue: #4fc3f7;
         
-        /* レジェンド設定 */
+        /* 一貫した角丸のルール */
+        --radius-lg: 16px;
+        --radius-md: 8px;
+        --radius-sm: 4px;
+        
+        /* 影とアニメーション */
+        --shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+        --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        
+        /* 重なり順の整理 */
+        --z-ui: 1000;
+        --z-modal: 2000;
+        --z-tooltip: 3000;
+    }
+
+    /* --- 2. ベーススタイル --- */
+    * { box-sizing: border-box; }
+    
+    body {
+        margin: 0;
+        overflow: hidden;
+        font-family: "Noto Sans JP", "Meiryo", sans-serif;
+        background-color: #f8f9fa;
+        color: var(--text-main);
+    }
+
+    /* カスタムスクロールバー（全体の統一感のため） */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: #999; }
+
+    /* --- 3. UIコンポーネント --- */
+
+    /* 検索ボックス */
+    #search-container {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        z-index: var(--z-ui);
+        width: 320px;
+    }
+    #search-input {
+        width: 100%;
+        padding: 12px 20px;
+        border-radius: 30px;
+        border: 1px solid var(--border-color);
+        background: var(--bg-glass);
+        backdrop-filter: blur(8px);
+        font-size: 16px;
+        box-shadow: var(--shadow);
+        outline: none;
+        transition: var(--transition);
+    }
+    #search-input:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(31, 119, 180, 0.2);
+    }
+    #search-results {
+        list-style: none;
+        margin: 8px 0 0 0;
+        padding: 8px;
+        background: var(--bg-glass);
+        backdrop-filter: blur(12px);
+        border-radius: var(--radius-md);
+        box-shadow: var(--shadow);
+        max-height: 300px;
+        overflow-y: auto;
+        display: none;
+        border: 1px solid var(--border-color);
+    }
+    .search-item {
+        padding: 10px 12px;
+        border-radius: var(--radius-sm);
+        cursor: pointer;
+        font-size: 14px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: var(--transition);
+    }
+    .search-item:hover { background: rgba(0,0,0,0.05); }
+    .search-party { font-size: 11px; color: var(--text-sub); background: rgba(0,0,0,0.08); padding: 2px 8px; border-radius: 12px; }
+
+    /* 凡例（レジェンド） */
+    #legend {
+        position: absolute;
+        bottom: 30px;
+        right: 30px;
+        background: var(--bg-glass);
+        backdrop-filter: blur(12px);
+        padding: 20px;
+        border-radius: var(--radius-lg);
+        min-width: 220px; 
+        max-height: 400px;
+        overflow-y: auto;
+        box-shadow: var(--shadow);
+        font-size: 14px;
+        border: 1px solid var(--border-color);
+        z-index: var(--z-ui);
+    }
+    .legend-title {
+        font-weight: bold;
+        margin-bottom: 12px;
+        font-size: 16px;
+        border-bottom: 2px solid var(--border-color);
+        padding-bottom: 8px;
+    }
+    .legend-item { 
+        display: flex; 
+        align-items: center; 
+        margin-bottom: 4px; 
+        cursor: pointer; 
+        padding: 6px 10px;
+        transition: var(--transition);
+        position: relative;
+        border-left: 4px solid transparent;
+    }
+    .legend-item span {
+        display: inline-flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .legend-item span::after {
+        content: attr(data-text);
+        height: 0;
+        visibility: hidden;
+        overflow: hidden;
+        user-select: none;
+        pointer-events: none;
+        font-weight: bold;
+    }
+    .legend-item:hover { background: rgba(0,0,0,0.05); }
+    .legend-item.selected { 
+        background-color: rgba(0,0,0,0.08); 
+        border-left: 4px solid var(--primary-color);
+        font-weight: bold;
+    }
+    .legend-icon { width: 18px; height: 18px; margin-right: 12px; border-radius: 2px; }
+
+    /* 解説ボタン */
+    #about-btn {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        width: 44px;
+        height: 44px;
+        background: var(--bg-glass);
+        backdrop-filter: blur(8px);
+        border: 1px solid var(--border-color);
+        border-radius: 50%;
+        font-weight: bold;
+        cursor: pointer;
+        z-index: var(--z-ui);
+        font-size: 20px;
+        color: var(--text-sub);
+        box-shadow: var(--shadow);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transition: var(--transition);
+        -webkit-tap-highlight-color: transparent;
+    }
+    #about-btn:hover { background: var(--primary-color); color: white; transform: scale(1.05); }
+
+    /* モーダル */
+    #about-modal {
+        display: none;
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background: rgba(0, 0, 0, 0.4);
+        backdrop-filter: blur(4px);
+        z-index: var(--z-modal);
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+    }
+    #about-content {
+        color: var(--text-main);
+        background: white;
+        padding: 40px;
+        border-radius: var(--radius-lg);
+        max-width: 640px;
+        width: 100%;
+        max-height: 85vh;
+        overflow-y: auto;
+        box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        position: relative;
+        line-height: 1.8;
+    }
+    #about-content h2 {
+        margin-top: 0; margin-bottom: 24px; padding-bottom: 16px;
+        border-bottom: 1px solid var(--border-color);
+        font-size: 24px; text-align: center;
+    }
+    #about-content h3 { font-size: 18px; margin-top: 32px; margin-bottom: 12px; }
+    #close-modal {
+        position: absolute;
+        top: 20px; right: 20px;
+        font-size: 28px;
+        cursor: pointer;
+        color: #bbb;
+        transition: var(--transition);
+    }
+    #close-modal:hover { color: var(--text-main); transform: rotate(90deg); }
+
+    /* ツールチップ */
+    #tooltip {
+        position: absolute;
+        display: none;
+        background: var(--bg-glass-dark);
+        backdrop-filter: blur(8px);
+        color: #fff;
+        padding: 14px;
+        border-radius: var(--radius-md);
+        font-size: 13px;
+        pointer-events: none;
+        z-index: var(--z-tooltip);
+        line-height: 1.6;
+        box-shadow: var(--shadow);
+        border: 1px solid rgba(255,255,255,0.1);
+    }
+    #tooltip strong { font-size: 16px; display: block; margin-bottom: 6px; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 4px;}
+    .tooltip-row { display: flex; justify-content: space-between; gap: 20px; color: #ddd; }
+    .tooltip-val { font-family: 'Roboto Mono', monospace; color: var(--accent-blue); font-weight: bold; }
+
+    /* --- 4. モバイル対応 --- */
+    @media (max-width: 600px) {
+        #search-container { width: calc(100% - 80px); top: 15px; left: 15px; }
         #legend {
-            position: absolute;
-            bottom: 30px;
-            right: 30px;
-            background: rgba(255, 255, 255, 0.95);
-            padding: 20px;
-            border-radius: 10px;
-            max-height: 400px;
-            overflow-y: auto;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            font-size: 16px;
-            border: 1px solid #ddd;
-        }
-        .legend-title {
-            font-weight: bold;
-            margin-bottom: 10px;
-            font-size: 18px;
-            border-bottom: 2px solid #ccc;
-            padding-bottom: 5px;
-        }
-        .legend-item { 
-            display: flex; align-items: center; margin-bottom: 8px; cursor: pointer; 
-            padding: 4px 8px; border-radius: 4px; transition: background 0.2s;
-        }
-        .legend-item:hover { background-color: #eee; }
-        .legend-item.selected { 
-            background-color: #ddd; 
-            border-left: 4px solid #555;
-            font-weight: bold;
-        }
-        .legend-icon { width: 20px; height: 20px; margin-right: 10px; display: inline-block; }
-
-        /* 解説ボタン */
-        #about-btn {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            width: 40px;
-            height: 40px;
-            background: rgba(255, 255, 255, 0.9);
-            border: 1px solid #ccc;
-            border-radius: 50%;
-            font-weight: bold;
-            cursor: pointer;
-            z-index: 1000;
-            font-size: 18px;
-            color: #555;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            -webkit-tap-highlight-color: transparent;/* スマホの「四角い色」を消す魔法 */
-        }
-        #about-btn:hover { background: #eee; }
-
-        /* モーダルウィンドウ */
-        #about-modal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 2000;
-            justify-content: center;
-            align-items: center;
-            padding: 10px;
-        }
-        #about-content {
-            color: #333;
-            background: white;
-            padding: 30px;
-            border-radius: 8px;
-            max-width: 600px;
-            width: 100%;
-            max-height: 85vh; /* 高さ制限 */
-            overflow-y: auto; /* スクロール許可 */
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            position: relative;
-            line-height: 1.8;
-            font-feature-settings: "palt";
-            letter-spacing: 0.05em;
-            text-align: justify;
-            text-justify: inter-ideograph;
-            word-wrap: break-word; 
-            overflow-wrap: break-word;
-        }
-        #about-content a {
-            word-break: break-all;
-            color: #1f77b4;
-        }
-        #about-content h2 {
-            margin-top: 0;
-            margin-bottom: 25px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid #eee;
-            font-size: 24px;
-            letter-spacing: 0.1em;
-            text-align: center;
-        }
-        #about-content h3 {
-            font-size: 18px;
-            margin-top: 35px;
-            margin-bottom: 15px;
-            font-weight: bold;
-            letter-spacing: 0.08em;
-        }
-        #about-content ul {
-            padding-left: 1.5em;
-            margin-bottom: 20px;
-        }
-        #about-content li {
-            margin-bottom: 10px;
-        }
-        #about-content p {
-            margin-bottom: 1.5em;
-        }
-        #close-modal {
-            position: absolute;
-            top: 10px; right: 15px;
-            font-size: 24px;
-            cursor: pointer;
-            color: #999;
-        }
-        #close-modal:hover { color: #333; }
-
-        /* 検索ボックス */
-        #search-container {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            z-index: 1000;
-            width: 300px;
-        }
-        #search-input {
-            width: 100%;
+            left: 15px; right: 15px; bottom: 15px;
+            max-height: 200px;
             padding: 12px;
-            border-radius: 25px;
-            border: 1px solid #ccc;
-            font-size: 16px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            outline: none;
-            box-sizing: border-box;
+            border-radius: var(--radius-md);
         }
-        #search-input:focus {
-            border-color: #1f77b4;
-            box-shadow: 0 2px 12px rgba(31, 119, 180, 0.3);
-        }
-        #search-results {
-            list-style: none;
-            margin: 5px 0 0 0;
-            padding: 0;
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            max-height: 300px;
-            overflow-y: auto;
-            display: none;
-        }
-        .search-item {
-            padding: 10px 15px;
-            border-bottom: 1px solid #eee;
-            cursor: pointer;
-            font-size: 14px;
-            display: flex;
-            justify-content: space-between;
-        }
-        .search-item:last-child { border-bottom: none; }
-        .search-item:hover { background-color: #f5f5f5; }
-        .search-party { font-size: 12px; color: #666; background: #eee; padding: 2px 6px; border-radius: 4px; }
-
-        #tooltip {
-            position: absolute;
-            display: none;
-            background: rgba(0, 0, 0, 0.85);
-            color: #fff;
-            padding: 12px;
-            border-radius: 6px;
-            font-size: 14px;
-            pointer-events: none; /* マウスイベントを透過させる（重要） */
-            z-index: 3000;
-            line-height: 1.5;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-            white-space: nowrap;
-        }
-        #tooltip strong { font-size: 16px; color: #fff; display: block; margin-bottom: 4px; border-bottom: 1px solid #777; padding-bottom: 2px;}
-        .tooltip-row { display: flex; justify-content: space-between; gap: 15px; font-size: 12px; color: #ccc; }
-        .tooltip-val { font-family: monospace; color: #4fc3f7; }
-
-        @media (max-width: 600px) {
-            /* 検索窓をタップしやすく、?ボタンと被らない幅に */
-            #search-container {
-                width: 75%;
-                top: 15px;
-                left: 15px;
-            }
-            
-            /* 凡例（右下）を画面下部に小さく配置 */
-            #legend {
-                bottom: 15px;
-                right: 15px;
-                left: 15px;
-                max-height: 25%;
-                padding: 10px;
-                font-size: 12px;
-            }
-            
-            /* 解説モーダルを画面幅に合わせる */
-            #about-content {
-                padding: 25px 20px;
-                max-height: 90vh;
-                width: 95%;
-                font-size: 14px;
-                line-height: 1.7;
-            }
-            #about-content h2 {
-                font-size: 20px;
-                margin-bottom: 20px;
-                padding-bottom: 10px;
-            }
-        }
+        #about-content { padding: 30px 20px; width: 95%; font-size: 14px; }
+        #about-btn { top: 15px; right: 15px; width: 40px; height: 40px; }
+    }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
