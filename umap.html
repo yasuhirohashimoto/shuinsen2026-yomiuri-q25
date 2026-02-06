@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>衆院選2026 候補者・政党党首好感度マップ（UMAP版）</title>
+    <title>衆院選2026 候補者：政党党首好感度マップ（UMAP版）</title>
     <style>
     /* --- 1. デザイン変数の定義 --- */
     :root {
@@ -256,6 +256,7 @@
     }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 </head>
 <body>
@@ -333,6 +334,16 @@
             else if (type === 1) { ctx.rect(10, 10, size - 20, size - 20); }
             else if (type === 2) { ctx.moveTo(center, 10); ctx.lineTo(size - 10, size - 10); ctx.lineTo(10, size - 10); ctx.closePath(); }
             else if (type === 3) { ctx.moveTo(center, 10); ctx.lineTo(size - 10, center); ctx.lineTo(center, size - 10); ctx.lineTo(10, center); ctx.closePath(); }
+            else if (type === 4) {
+                const w = 20;
+                ctx.moveTo(center - w, 10); ctx.lineTo(center + w, 10);
+                ctx.lineTo(center + w, center - w); ctx.lineTo(size - 10, center - w);
+                ctx.lineTo(size - 10, center + w); ctx.lineTo(center + w, center + w);
+                ctx.lineTo(center + w, size - 10); ctx.lineTo(center - w, size - 10);
+                ctx.lineTo(center - w, center + w); ctx.lineTo(10, center + w);
+                ctx.lineTo(10, center - w); ctx.lineTo(center - w, center - w);
+                ctx.closePath();
+            }
             ctx.fill();
             return new THREE.CanvasTexture(canvas);
         }
@@ -423,7 +434,7 @@
             textSprite.renderOrder = 999;
             scene.add(textSprite);
 
-            candidateObjects.push({ name: pt.name, party: pt.party, sprite: sprite, position: new THREE.Vector3(pt.x, pt.y, pt.z) });
+            candidateObjects.push({ name: pt.name, party: pt.party, sprite: sprite, label: textSprite, position: new THREE.Vector3(pt.x, pt.y, pt.z) });
         });
 
         // --- 4. 凡例とインタラクション ---
@@ -446,6 +457,20 @@
                     items.forEach(el => el.classList.remove('selected'));
                     div.classList.add('selected');
                 }
+
+                candidateObjects.forEach(obj => {
+                    const isMatch = !activeParty || obj.party === activeParty;
+                    gsap.to(obj.sprite.material, {
+                        opacity: isMatch ? 0.85 : 0.3,
+                        duration: 0.5,
+                        ease: "power2.out"
+                    });
+                    gsap.to(obj.label.material, {
+                        opacity: isMatch ? 0.9 : 0.1,
+                        duration: 0.5,
+                        ease: "power2.out"
+                    });
+                });
             });
         });
 
@@ -598,15 +623,39 @@
 
         function focusCandidate(candidateObj) {
             const targetPos = candidateObj.position;
-            controls.target.copy(targetPos);
-            camera.position.set(targetPos.x, targetPos.y, targetPos.z + 15);
-            controls.update();
+
+            gsap.to(camera.position, {
+                x: targetPos.x,
+                y: targetPos.y,
+                z: targetPos.z + 15,
+                duration: 1.5,
+                ease: "power3.inOut",
+                onUpdate: () => controls.update() // 移動中もコントロールを更新
+            });
+
+            gsap.to(controls.target, {
+                x: targetPos.x,
+                y: targetPos.y,
+                z: targetPos.z,
+                duration: 1.5,
+                ease: "power3.inOut"
+            });
         }
 
         function resetView() {
-            camera.position.set(initialCameraPos.x, initialCameraPos.y, initialCameraPos.z);
-            controls.target.set(0, 0, 0);
-            controls.update();
+            gsap.to(camera.position, {
+                x: initialCameraPos.x,
+                y: initialCameraPos.y,
+                z: initialCameraPos.z,
+                duration: 1.5,
+                ease: "power3.inOut",
+                onUpdate: () => controls.update()
+            });
+            gsap.to(controls.target, {
+                x: 0, y: 0, z: 0,
+                duration: 1.5,
+                ease: "power3.inOut"
+            });
         }
 
         searchInput.addEventListener('keypress', (e) => {
