@@ -362,6 +362,15 @@
                 ctx.lineTo(center, size - pad); 
                 ctx.lineTo(pad, center); 
                 ctx.closePath(); 
+            } else if (type === 4) {
+                const w = 2 * pad;
+                ctx.moveTo(center - w, pad); ctx.lineTo(center + w, pad);
+                ctx.lineTo(center + w, center - w); ctx.lineTo(size - pad, center - w);
+                ctx.lineTo(size - pad, center + w); ctx.lineTo(center + w, center + w);
+                ctx.lineTo(center + w, size - pad); ctx.lineTo(center - w, size - pad);
+                ctx.lineTo(center - w, center + w); ctx.lineTo(pad, center + w);
+                ctx.lineTo(pad, center - w); ctx.lineTo(center - w, center - w);
+                ctx.closePath();
             } else { 
                  ctx.arc(center, center, radius, 0, Math.PI * 2);
             }
